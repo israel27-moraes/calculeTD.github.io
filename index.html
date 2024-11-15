@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Aprovação de Empréstimo</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .container {
+            background: #ffffffcc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            text-align: left;
+            margin-top: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+    </style>
+    <script>
+        function calcularParcela(valorImovel, salarioComprador, tempoFinanciamento) {
+            const jurosAnual = 0.1125; // 11,25% ao ano
+            const jurosMensal = jurosAnual / 12;
+            const numeroParcelas = tempoFinanciamento * 12;
+            const parcela = (valorImovel * jurosMensal) / (1 - Math.pow(1 + jurosMensal, -numeroParcelas));
+            return Math.round(parcela);
+        }
+
+        function aprovarEmprestimo() {
+            const valorImovel = parseFloat(document.getElementById('valorImovel').value);
+            const salarioComprador = parseFloat(document.getElementById('salarioComprador').value);
+            const tempoFinanciamento = parseFloat(document.getElementById('tempoFinanciamento').value);
+
+            if (isNaN(valorImovel) || isNaN(salarioComprador) || isNaN(tempoFinanciamento)) {
+                alert('Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            const parcela = calcularParcela(valorImovel, salarioComprador, tempoFinanciamento);
+            const totalParcelas = tempoFinanciamento * 12;
+            const totalEmprestimo = parcela * totalParcelas;
+
+            let resultado = 'Empréstimo aprovado! As primeiras 10 parcelas mensais são detalhadas abaixo:\n\n';
+
+            for (let i = 1; i <= 10; i++) {
+                resultado += 'Parcela ' + i + ': R$' + parcela + '\n';
+            }
+            resultado += '\nTotal das parcelas: R$' + totalEmprestimo + ' (em ' + totalParcelas + ' parcelas).';
+
+            document.getElementById('resultado').innerText = resultado;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Aprovação de Empréstimo</h1>
+        <form onsubmit="aprovarEmprestimo(); return false;">
+            <label for="valorImovel">Valor do Imóvel:</label>
+            <input type="number" id="valorImovel" required><br><br>
+
+            <label for="salarioComprador">Salário do Comprador:</label>
+            <input type="number" id="salarioComprador" required><br><br>
+
+            <label for="tempoFinanciamento">Tempo de Financiamento (anos):</label>
+            <input type="number" id="tempoFinanciamento" required><br><br>
+
+            <button type="submit">Enviar</button>
+        </form>
+        <pre id="resultado"></pre>
+    </div>
+</body>
+</html>
