@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Aprovação de Empréstimo</title>
+    <title>Início e Aprovação de Empréstimo</title>
     <style>
         body {
             display: flex;
@@ -22,6 +22,20 @@
             color: #333;
             font-size: 24px;
         }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
         label {
             display: block;
             margin-top: 10px;
@@ -35,20 +49,6 @@
             font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 4px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
         pre {
             text-align: left;
@@ -66,7 +66,7 @@
             const jurosMensal = jurosAnual / 12;
             const numeroParcelas = tempoFinanciamento * 12;
             const parcela = (valorImovel * jurosMensal) / (1 - Math.pow(1 + jurosMensal, -numeroParcelas));
-            return Math.round(parcela);
+            return Math.round(parcela * 10000) / 10000;
         }
 
         function aprovarEmprestimo() {
@@ -80,22 +80,85 @@
             }
 
             const parcela = calcularParcela(valorImovel, salarioComprador, tempoFinanciamento);
-            const totalParcelas = tempoFinanciamento * 12;
-            const totalEmprestimo = parcela * totalParcelas;
+            const limiteParcela = 0.3 * salarioComprador; // 30% do salário do comprador
+            let resultado;
 
-            let resultado = 'Empréstimo aprovado! As primeiras 10 parcelas mensais são detalhadas abaixo:\n\n';
-
-            for (let i = 1; i <= 10; i++) {
-                resultado += 'Parcela ' + i + ': R$' + parcela + '\n';
+            if (parcela > limiteParcela) {
+                resultado = 'Empréstimo reprovado! A parcela de R$' + parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ' excede 30% do seu salário.\n';
+            } else {
+                resultado = 'Empréstimo aprovado! As primeiras 10 parcelas mensais são detalhadas abaixo:\n\n';
+                for (let i = 1; i <= 10; i++) {
+                    resultado += 'Parcela ' + i + ': R$' + parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + '\n';
+                }
             }
-            resultado += '\nTotal das parcelas: R$' + totalEmprestimo + ' (em ' + totalParcelas + ' parcelas).';
 
             document.getElementById('resultado').innerText = resultado;
+            document.getElementById('voltarInicioEmprestimo').style.display = 'block';
+        }
+
+        function calcularMedia() {
+            const nota1 = parseFloat(document.getElementById('nota1').value);
+            const nota2 = parseFloat(document.getElementById('nota2').value);
+            const nota3 = parseFloat(document.getElementById('nota3').value);
+
+            if (isNaN(nota1) || isNaN(nota2) || isNaN(nota3)) {
+                alert('Por favor, preencha todas as notas corretamente.');
+                return;
+            }
+
+            const media = (nota1 + nota2 + nota3) / 3;
+            const passou = media >= 6.0 ? 'Aprovado!' : 'Reprovado.';
+            const mensagemMotivacional = media >= 6.0 ? mensagensAprovado() : mensagensReprovado();
+
+            document.getElementById('resultadoMedia').innerText = 'Média do aluno: ' + media.toFixed(2) + ' - ' + passou + '\n' + mensagemMotivacional;
+            document.getElementById('voltarInicioMedia').style.display = 'block';
+        }
+
+        function mensagensAprovado() {
+            const mensagens = [
+                'Parabéns! Continue se esforçando e você alcançará ainda mais.',
+                'Ótimo trabalho! O sucesso é resultado do esforço contínuo.',
+                'Você conseguiu! Agora, aproveite sua conquista e continue firme.',
+                'Aprovado! Sua dedicação está dando frutos.',
+                'Excelente! Continue nesse ritmo e conquiste seus objetivos.'
+            ];
+            return mensagens[Math.floor(Math.random() * mensagens.length)];
+        }
+
+        function mensagensReprovado() {
+            const mensagens = [
+                'Não desista! Cada falha é um passo mais perto do sucesso.',
+                'Você é capaz de superar isso! Continue tentando.',
+                'Levante a cabeça! O fracasso é apenas uma oportunidade para recomeçar com mais força.',
+                'Mantenha a determinação! As dificuldades nos fazem mais fortes.',
+                'Não desanime! O caminho para o sucesso é pavimentado com perseverança.'
+            ];
+            return mensagens[Math.floor(Math.random() * mensagens.length)];
+        }
+
+        function mostrarFormulario(formulario) {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('emprestimo').style.display = formulario === 'emprestimo' ? 'block' : 'none';
+            document.getElementById('mediaAluno').style.display = formulario === 'mediaAluno' ? 'block' : 'none';
+        }
+
+        function voltarInicio() {
+            document.getElementById('inicio').style.display = 'block';
+            document.getElementById('emprestimo').style.display = 'none';
+            document.getElementById('mediaAluno').style.display = 'none';
+            document.getElementById('voltarInicioEmprestimo').style.display = 'none';
+            document.getElementById('voltarInicioMedia').style.display = 'none';
         }
     </script>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="inicio">
+        <h1>Bem-vindo ao Sistema</h1>
+        <button onclick="mostrarFormulario('emprestimo')">Ir para Empréstimos</button>
+        <button onclick="mostrarFormulario('mediaAluno')">Média de um Aluno</button>
+    </div>
+
+    <div class="container" id="emprestimo" style="display:none;">
         <h1>Aprovação de Empréstimo</h1>
         <form onsubmit="aprovarEmprestimo(); return false;">
             <label for="valorImovel">Valor do Imóvel:</label>
@@ -110,6 +173,21 @@
             <button type="submit">Enviar</button>
         </form>
         <pre id="resultado"></pre>
+        <button id="voltarInicioEmprestimo" onclick="voltarInicio()" style="display:none;">Voltar para o Início</button>
     </div>
-</body>
-</html>
+
+    <div class="container" id="mediaAluno" style="display:none;">
+        <h1>Calcular Média de um Aluno</h1>
+        <form onsubmit="calcularMedia(); return false;">
+            <label for="nota1">Nota 1:</label>
+            <input type="number" id="nota1" required><br><br>
+
+            <label for="nota2">Nota 2:</label>
+            <input type="number" id="nota2" required><br><br>
+
+            <label for="nota3">Nota 3:</label>
+            <input type="number" id="nota3" required><br><br>
+
+            <button type="submit">Calcular</button>
+        </form>
+        <pre id="resultado
