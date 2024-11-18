@@ -10,6 +10,7 @@
             height: 100vh;
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
         }
         .container {
             background: #ffffffcc;
@@ -17,6 +18,8 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
         h1 {
             color: #333;
@@ -84,11 +87,11 @@
             let resultado;
 
             if (parcela > limiteParcela) {
-                resultado = 'Empréstimo reprovado! A parcela de R$' + parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ' excede 30% do seu salário.\n';
+                resultado = 'Empréstimo reprovado! A parcela de ' + parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ' excede 30% do seu salário.\n';
             } else {
                 resultado = 'Empréstimo aprovado! As primeiras 10 parcelas mensais são detalhadas abaixo:\n\n';
                 for (let i = 1; i <= 10; i++) {
-                    resultado += 'Parcela ' + i + ': R$' + parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + '\n';
+                    resultado += 'Parcela ' + i + ': ' + parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + '\n';
                 }
             }
 
@@ -162,13 +165,13 @@
         <h1>Aprovação de Empréstimo</h1>
         <form onsubmit="aprovarEmprestimo(); return false;">
             <label for="valorImovel">Valor do Imóvel:</label>
-            <input type="number" id="valorImovel" required><br><br>
+            <input type="number" id="valorImovel" min="0" step="0.01" required><br><br>
 
             <label for="salarioComprador">Salário do Comprador:</label>
-            <input type="number" id="salarioComprador" required><br><br>
+            <input type="number" id="salarioComprador" min="0" step="0.01" required><br><br>
 
             <label for="tempoFinanciamento">Tempo de Financiamento (anos):</label>
-            <input type="number" id="tempoFinanciamento" required><br><br>
+            <input type="number" id="tempoFinanciamento" min="1" step="1" required><br><br>
 
             <button type="submit">Enviar</button>
         </form>
@@ -180,13 +183,13 @@
         <h1>Calcular Média de um Aluno</h1>
         <form onsubmit="calcularMedia(); return false;">
             <label for="nota1">Nota 1:</label>
-            <input type="number" id="nota1" required><br><br>
+            <input type="number" id="nota1" min="0" max="10" step="0.01" required><br><br>
 
             <label for="nota2">Nota 2:</label>
-            <input type="number" id="nota2" required><br><br>
+            <input type="number" id="nota2" min="0" max="10" step="0.01" required><br><br>
 
             <label for="nota3">Nota 3:</label>
-            <input type="number" id="nota3" required><br><br>
+            <input type="number" id="nota3" min="0" max="10" step="0.01" required><br><br>
 
             <button type="submit">Calcular</button>
         </form>
